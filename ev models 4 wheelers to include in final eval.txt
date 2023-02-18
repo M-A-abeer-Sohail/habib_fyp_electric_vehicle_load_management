@@ -1,0 +1,24 @@
+Hyundai -> 7.2 kW 3.3 kW 6.6 kW
+Kia -> 7.2 kW 3.7 kW 4.6 kW 6.6 kW
+Toyota -> 3.7 kW 2.8 kW
+Mitsubishi -> 3.7 kW
+Nissan -> 3.3 kW 6.6 kW 4.6 kW
+
+Total models = 14
+[H H H H K K K K T T M N N N]
+
+H-> Kona Elektro 150 kW
+    IONIQ Elektro
+
+K-> Soul EV (until 2017)
+    Soul EV (since 2017)
+    e-Niro
+
+T-> Prius Plug-In Hybrid(until 2016)
+    Prius Plug-In Hybrid
+
+M-> i-MiEV
+    Plug-in Hybrid Outlander
+
+N-> Leaf (24 kWh)
+    Leaf (30 kWh)

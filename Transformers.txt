@@ -1,0 +1,37 @@
+!SUB TRANSFORMER DEFINITION 
+! Although this data was given, it does not appear to be used in the test case results
+! The published test case starts at 1.0 per unit at Bus 650. To make this happen, we will change the impedance
+! on the transformer to something tiny by dividing by 1000 using the DSS in-line RPN math
+
+New Transformer.Sub Phases=3 Windings=2   XHL=8
+~ buses=(SourceBus,650)   conns=(delta, wye)  kvs=(132,11)  kvas=(5500,5500)   r = (0.0005, 0.0005)  XHT=4 XLT=4
+
+
+! FEEDER 1-PHASE VOLTAGE REGULATORS
+! Define low-impedance 2-wdg transformer
+
+/* New Transformer.Reg1 phases=1 XHL=0.01 kVAs=[1666 1666]
+~ Buses=[650.1 RG60.1] kVs=[2.4  2.4] %LoadLoss=0.001
+new regcontrol.Reg1  transformer=Reg1 winding=2  vreg=122  band=2  ptratio=20 ctprim=700  R=3   X=9 */
+
+/* New Transformer.Reg2 phases=1 XHL=0.01 kVAs=[1666 1666]
+~ Buses=[650.2 RG60.2] kVs=[2.4  2.4] %LoadLoss=0.001
+new regcontrol.Reg2  transformer=Reg2 winding=2  vreg=122  band=2  ptratio=20 ctprim=700  R=3    X=9*/
+
+/* New Transformer.Reg3 phases=1 XHL=0.01 kVAs=[1666 1666]
+~ Buses=[650.3 RG60.3] kVs=[2.4  2.4] %LoadLoss=0.001
+new regcontrol.Reg3  transformer=Reg3 winding=2  vreg=122  band=2  ptratio=20 ctprim=700  R=3    X=9 */
+
+!DISTRIBUTION TRANSFORMER DEFINITION 
+New Transformer.XFM1  Phases=3   Windings=2  XHL=2 buses=(633, 634) conns=(wye,wye) kvs=(11, 0.4) kvas=(1000,1000) r=(0.0055, 0.0055)     XHL=2
+
+New Transformer.XFM2  Phases=3   Windings=2  XHL=2 buses=(692, 675) conns=(wye,wye) kvs=(11, 0.4) kvas=(1000,1000) r=(0.0055, 0.0055)     XHL=2
+
+! PMT at bus 652
+New Transformer.XFM3  Phases=3   Windings=2  XHL=2 buses=(684, 652) conns=(wye,wye) kvs=(11, 0.4) kvas=(1000,1000) r=(0.0055, 0.0055)     XHL=2
+
+! PMT at bus 611
+New Transformer.XFM4  Phases=3   Windings=2  XHL=2 buses=(684, 611) conns=(wye,wye) kvs=(11, 0.4) kvas=(1000,1000) r=(0.0055, 0.0055)     XHL=2
+
+! PMT at bus 646
+New Transformer.XFM5  Phases=3   Windings=2  XHL=2 buses=(645, 646) conns=(wye,wye) kvs=(11, 0.4) kvas=(1000,1000) r=(0.0055, 0.0055)     XHL=2
