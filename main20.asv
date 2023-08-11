@@ -761,7 +761,8 @@ figure('Renderer', 'painters', 'Position', [200 100 1100 700])
 plot(bus680I(:,1),'linewidth',plotWidth); hold on;
 plot(bus680I(:,2),'linewidth',plotWidth*1.12); 
 plot(bus680I(:,3),'linewidth',plotWidth*1.14); 
-% plot(ones(1,npts)*726,'linewidth',plotWidth); % CURRENT RATING!!! -> Why'd I remove this?
+% plot(ones(1,npts)*726,'linewidth',plotWidth); % CURRENT RATING!!! ->
+% Why'd I remove this
 % plot(ones(1,npts)*(1000*1.5/0.4/sqrt(3)),'linewidth',plotWidth);
 hold off;
 xticks(linspace(1,24*nptMult,7));
@@ -772,9 +773,8 @@ title('Bus 680 current flow at 20% EV penetration', 'FontSize', titleFontSize); 
     'FontSize', axisFontSize); ylabel('Current (A)', 'FontSize', axisFontSize);
 ax = gca; ax.FontSize = axisFontSize;
 str = "Normal Ampere rating";
-
-% Max rating are from max current, normamps
-ylim([floor(min((bus680I), [], 'all'))/500 ceil(max([max(bus680I,[] ,'all'); 0]))*1.15])  
+ylim([floor(min((bus680I), [], 'all'))/500 ceil(max([max(bus680I,[] ,'all'); 0]))*1.15]) % Max rating are from max current,
+                                                                                                      % normamps 
 xlim([1 24*nptMult]);
 lgnd = legend({'Phase a','Phase b','Phase c',str},'Location','southoutside','orientation','horizontal');
 lgnd.FontSize = lgndFontSize; clearvars str;

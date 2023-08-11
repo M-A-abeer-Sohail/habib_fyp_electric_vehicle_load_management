@@ -89,6 +89,7 @@ offsetb = 0.3; % ADDS to industMult values
 
 mults = load('mults.mat');
 
+% Generating the multipliers: residential loadshape multipliers
 % resMult = 5*normpdf(linspace(-0.1,0.5,npts),0.35,0.2) + noiseStd*5.*randn(1,npts);
 % temp = load('resMult.mat'); % CITE FROM SATSANGI
 % resMult = temp.ans; clearvars temp;
@@ -97,7 +98,7 @@ mults = load('mults.mat');
 
 resMult = mults.resMult;
 
-% the multiplier values for residential load, made using normpdf
+% Generating the multipliers: industrial loadshape multipliers
 % This peaks at 10am and drops at close to 12 pm
 % industMult = 5*normpdf(linspace(-0.7,0.5,npts),-0.1,0.3) + 5*noiseStd.*randn(1,npts);
 % industMult = industMult./max(industMult)/multb + offsetb;
@@ -109,6 +110,7 @@ load busNames.mat;
 
 basekVs = [132 11 11 0.4 11 0.4 11 0.4 0.4 11 0.4 11 11 11];
 
+% Saving those multipliers for later use
 % save('multVals','resMult','industMult');
 
 %%
@@ -139,7 +141,7 @@ resLdkvar = [];
 industLdkw = [];
 industLdkvar = [];
 
-%%
+%% Some code to generate data perhaps
 % close all;
 % figure;
 % plot(resMult); hold on; plot(industMult); hold off;
@@ -168,7 +170,7 @@ ratedDisTr611kw = distTrafokVA * homePowerFactor;
 ratedDisTr675kw = distTrafokVA * homePowerFactor;
 ratedDisTr646kw = distTrafokVA * homePowerFactor;
 
-%%
+%% Some code to calculate values under non-EV load as a benchmark
 %----------------------Junk Code---------------------
 % NEED TO BE CALCULATED FROM NORMAL CONDITION!
 % ratedSubkw = ceil(1.2*max(sum(reskwDaily, 2) + sum(indkwDaily, 2))); % 20% of max load we'll set to rated.
@@ -251,8 +253,9 @@ numTrafo = 6; % 5 distr. trafo's and one substation trafo
 
 for i = 1:npts
     % residential house load
-%     kwLoopRes = housekw*houseMult(i); kvarLoopRes = housekvar*houseMult(i); % The particular power
-%   % industrial load                                                         % values for the i-th hour
+%     kwLoopRes = housekw*houseMult(i); kvarLoopRes = housekvar*houseMult(i);
+%     The particular power values for the i-th hour
+%   % industrial load                                                         
 %     kwLoopInd = industkw*industMult(i); kvarLoopInd = industkvar*industMult(i);
 
     %residential house load
@@ -284,14 +287,14 @@ for i = 1:npts
     % tempBus680I = getCurr1ph1hr(xlsread('MasterIEEE13_EXP_CURRENTS.CSV',1,'B23:E25'));
     tempBus692I = getCurr3ph1hr(xlsread('MasterIEEE13_EXP_CURRENTS.CSV',1,'L2:Q15'), 10 ,14);
     
-    subI = [subI; tempI(1,:)]; % Need this
-    xfm634I = [xfm634I; tempI(2,:)]; % Need this
-    xfm675I = [xfm675I; tempI(3,:)]; % Need this
+    subI = [subI; tempI(1,:)]; % Need this for final
+    xfm634I = [xfm634I; tempI(2,:)]; % Need this for final
+    xfm675I = [xfm675I; tempI(3,:)]; % Need this for final
     xfm652I = [xfm652I; tempI(4,:)];
     xfm611I = [xfm611I; tempI(5,:)];
     xfm646I = [xfm646I; tempI(6,:)];
-    bus680I = [bus680I; tempBus692I(1,:)]; % Need this
-    bus692I = [bus692I; tempBus692I(end,:)]; % Need this
+    bus680I = [bus680I; tempBus692I(1,:)]; % Need this for final
+    bus692I = [bus692I; tempBus692I(end,:)]; % Need this for final
     
 
     % substation and distr. trafo.
@@ -318,6 +321,7 @@ for i = 1:npts
     PLoss = [PLoss PLossTemp];
     QLoss = [QLoss QLossTemp];
     
+    % TODO: Figure out why I commented this out
     % clearvars -except subkw subkvar xfmkw xfmkvar str_part lds_kw lds_kvar normal_mult overld20_mult overld40_mult V1pu V2pu V3pu
 end
 
@@ -335,9 +339,9 @@ clc;
 %%
 close all;
 
+% Just testing something I guess
 % figure;
 % plot(sum(subkw, 2),'Color','red');
-
 % load('normal.mat');
 
 V1pu(V1pu==0) = NaN;
@@ -433,7 +437,7 @@ lgnd = legend({'Phase a','Phase b','Phase c',str,'Rated kW'},'Location','southou
 lgnd.FontSize = lgndFontSize; clearvars str;
 ylim([floor(min(subkw, [], 'all'))/500/1.25 ceil(max([sum(subkw, 2); ratedSubkw]))*1.225])
 xlim([1 24*nptMult]);
-%%
+%% I think this plot was not needed for final eval
 % % Plotting 24-hr flow at substation (kVA plot) -> use sqrt(-1) instead of
                                                     % i because I used it as a counter
 % figure('Renderer', 'painters', 'Position', [200 -100 1100 700])
@@ -714,7 +718,7 @@ xlim([1 24*nptMult]);
 lgnd = legend({'Phase a','Phase b','Phase c',str},'Location','southoutside','orientation','horizontal');
 lgnd.FontSize = lgndFontSize; clearvars str;
 
-%%
+%% I think following plots were not needed for final eval
 % % Plotting 24-hr current flow at 2ndary terminal for 675
 % figure('Renderer', 'painters', 'Position', [200 100 1100 700])
 % plot(xfm675I(:,1),'linewidth',plotWidth); hold on;
