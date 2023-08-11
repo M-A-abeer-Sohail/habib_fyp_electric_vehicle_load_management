@@ -1,41 +1,19 @@
 ! LOAD DEFINITIONS FOR IEEE-13 BUS RADIAL DISTRIBUTION SYSTEM 
-New Load.645a Bus1=645.1.2   Phases=1 Conn=delta Model=2 kV=11 kw = 40   kvar = 29 
-New Load.645b Bus1=645.2.3   Phases=1 Conn=delta Model=2 kV=11 kw = 30   kvar = 25 
-New Load.645c Bus1=645.3.1   Phases=1 Conn=delta Model=2 kV=11 kw = 42   kvar = 30 
-New Load.671 Bus1=671.1.2.3  Phases=3 Conn=Delta Model=1 kV=11 kw = 212   kvar = 136 
-New Load.692  Bus1=692.1.2.3 Phases=3 Conn=Delta Model=5 kV=11  kw = 131   kvar = 113 
-New Load.680a Bus1=680.1     Phases=1 Conn=Wye   Model=5 kV=6.35 kw = 47   kvar = 25 
-New Load.680b Bus1=680.2     Phases=1 Conn=Wye   Model=5 kV=6.35 kw = 42   kvar = 21 
-New Load.680c Bus1=680.3     Phases=1 Conn=Wye   Model=5 kV=6.35 kw = 49   kvar = 28 
-New Load.634a Bus1=634.1     Phases=1 Conn=wye   Model=1 kV=0.23 kw = 86   kvar = 42 
-New Load.634b Bus1=634.2     Phases=1 Conn=wye   Model=1 kV=0.23 kw = 108   kvar = 52 
-New Load.634c Bus1=634.3     Phases=1 Conn=wye   Model=1 kV=0.23 kw = 79   kvar = 38 
-New Load.646a Bus1=646.1     Phases=1 Conn=wye   Model=2 kV=0.23 kw = 108   kvar = 52 
-New Load.646b Bus1=646.2     Phases=1 Conn=wye   Model=2 kV=0.23 kw = 137   kvar = 66 
-New Load.652  Bus1=652.1     Phases=1 Conn=Wye   Model=1 kV=0.23 kw = 165   kvar = 80 
-New Load.611  Bus1=611.3     Phases=1 Conn=Wye   Model=5 kV=0.23 kw = 168   kvar = 82 
-New Load.675a Bus1=675.1     Phases=1 Conn=Wye   Model=1 kV=0.23 kw = 158   kvar = 76 
-New Load.675b Bus1=675.2     Phases=1 Conn=Wye   Model=1 kV=0.23 kw = 172   kvar = 83 
-New Load.675c Bus1=675.3     Phases=1 Conn=Wye   Model=1 kV=0.23 kw = 151   kvar = 73 
-New Load.EV_634a Bus1=634.1 Phases=1 Conn=Wye  Model=1 kV=0.23 vminpu=0.3 kw = 0   kvar = 0 
-New Load.EV_634b Bus1=634.2 Phases=1 Conn=Wye   Model=1 kV=0.23 vminpu=0.3 kw = 0   kvar = 0 
-New Load.EV_634c Bus1=634.3 Phases=1 Conn=Wye   Model=1 kV=0.23 vminpu=0.3 kw = 0   kvar = 0 
-New Load.EV_675a Bus1=675.1 Phases=1 Conn=Wye   Model=1 kV=0.23 vminpu=0.3 kw = 0   kvar = 0 
-New Load.EV_675b Bus1=675.2 Phases=1 Conn=Wye   Model=1 kV=0.23 vminpu=0.3 kw = 0   kvar = 0 
-New Load.EV_675c Bus1=675.3 Phases=1 Conn=Wye   Model=1 kV=0.23 vminpu=0.3 kw = 1   kvar = 0 
-New Load.EV_646a Bus1=646.1 Phases=1 Conn=Wye  Model=1 kV=0.23 vminpu=0.3 kw = 1   kvar = 0 
-New Load.EV_646b Bus1=646.2 Phases=1 Conn=Wye  Model=1 kV=0.23 vminpu=0.3 kw = 18   kvar = 9 
-New Load.EV_652a Bus1=652.1 Phases=1 Conn=Wye  Model=1 kV=0.23 vminpu=0.3 kw = 18   kvar = 9 
-New Load.EV_611c Bus1=611.3 Phases=1 Conn=Wye  Model=1 kV=0.23 vminpu=0.3 kw = 18   kvar = 9 
-New Load.EV_645a Bus1=645.1 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 19   kvar = 9 
-New Load.EV_645b Bus1=645.2 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 19   kvar = 9 
-New Load.EV_645c Bus1=645.3 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 19   kvar = 9 
-New Load.EV_671a Bus1=671.1 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 9   kvar = 4 
-New Load.EV_671b Bus1=671.2 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 9   kvar = 4 
-New Load.EV_671c Bus1=671.3 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 9   kvar = 4 
-New Load.EV_692a Bus1=692.1 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 3   kvar = 1 
-New Load.EV_692b Bus1=692.2 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 3   kvar = 1 
-New Load.EV_692c Bus1=692.3 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 3   kvar = 1 
-New Load.EV_680a Bus1=680.1 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 3   kvar = 2 
-New Load.EV_680b Bus1=680.2 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 3   kvar = 2 
-New Load.EV_680c Bus1=680.3 Phases=1 Conn=Wye  Model=1 kV=6.35 vminpu=0.3 kw = 3   kvar = 2 
+New Load.645a Bus1=645.1.2   Phases=1 Conn=delta Model=2 kV=11 kw = 170   kvar = 125 
+New Load.645b Bus1=645.2.3   Phases=1 Conn=delta Model=2 kV=11 kw = 130   kvar = 110 
+New Load.645c Bus1=645.3.1   Phases=1 Conn=delta Model=2 kV=11 kw = 180   kvar = 130 
+New Load.671 Bus1=671.1.2.3  Phases=3 Conn=Delta Model=1 kV=11 kw = 900   kvar = 580 
+New Load.692  Bus1=692.1.2.3 Phases=3 Conn=Delta Model=5 kV=11  kw = 555   kvar = 480 
+New Load.680a Bus1=680.1     Phases=1 Conn=Wye   Model=5 kV=6.35 kw = 200   kvar = 110 
+New Load.680b Bus1=680.2     Phases=1 Conn=Wye   Model=5 kV=6.35 kw = 180   kvar = 90 
+New Load.680c Bus1=680.3     Phases=1 Conn=Wye   Model=5 kV=6.35 kw = 210   kvar = 120 
+New Load.634a Bus1=634.1     Phases=1 Conn=wye   Model=1 kV=0.23 kw = 162   kvar = 79 
+New Load.634b Bus1=634.2     Phases=1 Conn=wye   Model=1 kV=0.23 kw = 203   kvar = 99 
+New Load.634c Bus1=634.3     Phases=1 Conn=wye   Model=1 kV=0.23 kw = 149   kvar = 73 
+New Load.646a Bus1=646.1     Phases=1 Conn=wye   Model=2 kV=0.23 kw = 203   kvar = 99 
+New Load.646b Bus1=646.2     Phases=1 Conn=wye   Model=2 kV=0.23 kw = 257   kvar = 125 
+New Load.652  Bus1=652.1     Phases=1 Conn=Wye   Model=1 kV=0.23 kw = 311   kvar = 151 
+New Load.611  Bus1=611.3     Phases=1 Conn=Wye   Model=5 kV=0.23 kw = 316   kvar = 154 
+New Load.675a Bus1=675.1     Phases=1 Conn=Wye   Model=1 kV=0.23 kw = 297   kvar = 144 
+New Load.675b Bus1=675.2     Phases=1 Conn=Wye   Model=1 kV=0.23 kw = 324   kvar = 157 
+New Load.675c Bus1=675.3     Phases=1 Conn=Wye   Model=1 kV=0.23 kw = 284   kvar = 138 
