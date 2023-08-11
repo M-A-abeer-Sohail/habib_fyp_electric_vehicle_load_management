@@ -7,7 +7,7 @@ clear;
 %% Notes
 % Save a dataset for each case
 
-% 2 and 3 wheelers will have a different peak
+%   2 and 3 wheelers will have a different peak
 %   They will have low charging powers and higher times
 %   hence put up all night. They will also be more POPULAR.
 
