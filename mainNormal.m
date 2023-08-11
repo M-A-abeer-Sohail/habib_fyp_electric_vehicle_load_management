@@ -54,7 +54,7 @@ loadFileComponents=['New Load.645a Bus1=645.1.2   Phases=1 Conn=delta Model=2 kV
     'New Load.675b Bus1=675.2     Phases=1 Conn=Wye   Model=1 kV=0.23 ',... 
     'New Load.675c Bus1=675.3     Phases=1 Conn=Wye   Model=1 kV=0.23 ']; 
 
-housePowerFactor = 0.9; 
+homePowerFactor = 0.9; 
 
 nHomes = ceil([60, 75, 55, 75, 95, 115, 117, 110, 120, 105]);
 % We are assuming the numbers of houses, and we actually worked backwards
@@ -68,7 +68,7 @@ nHomes = ceil([60, 75, 55, 75, 95, 115, 117, 110, 120, 105]);
 residentialRatedLoadKw = 2.7;
 
 residentialKwLoad = ceil(nHomes.*residentialRatedLoadKw); % Assumed from active power data from IoT dataset
-residentialKvarLoad = ceil(residentialKwLoad*tan(acos(housePowerFactor)));
+residentialKvarLoad = ceil(residentialKwLoad*tan(acos(homePowerFactor)));
 
 nResidentialLoads = length(residentialKwLoad);
 nindustrialLoads = length(industrialKwFromTestCase);
@@ -109,7 +109,7 @@ else
 end
 
 load busNames.mat;
-basekVs = [132 11 11 0.4 11 0.4 11 0.4 0.4 11 0.4 11 11 11];resLdkw
+perUnitBasekVs = [132 11 11 0.4 11 0.4 11 0.4 0.4 11 0.4 11 11 11];
 
 %%
 close all; plot(residentialMuls); hold on; plot(industrialMults); hold off;
@@ -135,7 +135,7 @@ makingLoads(loadFileComponents, [industrialKwFromTestCase residentialKwLoad],...
 % TODO: Change them to more meaningful names
 resLoadsKwFinal = [];
 resLoadsKvarFinal = [];
-indtLoadsKwFinal = [];
+indLoadsKwFinal = [];
 indLoadsKvar = [];
 
 %% You can check the modified IEEE 13 test case in our thesis to verify bus names
@@ -235,14 +235,14 @@ for i = 1:nPoints
     V2pu = [V2pu; Vpu1hr(:,2)']; % Get the per-phase voltage values for phase b
     V3pu = [V3pu; Vpu1hr(:,3)']; % Get the per-phase voltage values for phase c
     
+    % TODO: Replace xlsread with read csv
+
     % Read the powers per phase from the file
     [tempTrafoKw, tempTrafoKvar, tempLoadKw, tempLoadKvar]...
          = getPs(xlsread('MasterIEEE13_EXP_P_BYPHASE.CSV',1,'E2:J34'),...
-         startLoadAt, phaseWiseArray, nTrafos); % Extract the 
-                                             % power values for all loads
-                                             % and trafos
+         startLoadAt, phaseWiseArray, nTrafos); % Extract the power values for all loads and trafos
     
-    indtLoadsKwFinal = [indtLoadsKwFinal; sum(tempLoadKw(1:nindustrialLoads,:), 1)];
+    indLoadsKwFinal = [indLoadsKwFinal; sum(tempLoadKw(1:nindustrialLoads,:), 1)];
     indLoadsKvar = [indLoadsKvar; sum(tempLoadKvar(1:nindustrialLoads,:), 1)];
     
     resLoadsKwFinal = [resLoadsKwFinal; sum(tempLoadKw(nindustrialLoads+1:end,:), 1)];
@@ -291,7 +291,7 @@ end
 save('normal','V1pu','V2pu','V3pu',...
     'distTrafo634DailyKw', 'distTrafo634DailyKvar', 'distTrafo675DailyKw', 'distTrafo675DailyKvar', 'distTrafo652DailyKw', 'distTrafo652DailyKvar',...
     'distTrafo611DailyKw', 'distTrafo611DailyKvar', 'distTrafo646DailyKw', 'distTrafo646DailyKvar',...
-    'substationDailyKw','subkvar', 'resLoadsKwFinal','indtLoadsKwFinal',...
+    'substationDailyKw','subkvar', 'resLoadsKwFinal','indLoadsKwFinal',...
     'resLoadsKvarFinal','indLoadsKvar','showLossFor',...
     'resRatedKwLoad','resRatedKvarLoad','indRatedKwLoad','indRatedKvarLoad',...
     'substationCurrent','distTrafo634LVCurrent','distTrafo646LVCurrent','distTrafo675LVCurrent','distTrafo652LVCurrent','distTrafo611LVCurrent','bus680OutgoingCurrent','bus692OutgoingCurrent',...
@@ -310,7 +310,7 @@ V3pu(V3pu==0) = NaN;
 % Total load (residential + industrial) graphs
 figure('Renderer', 'painters', 'Position', [200 -100 1100 700]);
 hold on; 
-plot(sum(resLoadsKwFinal, 2) + sum(indtLoadsKwFinal, 2),'Color','blue','Marker','o','MarkerFaceColor','white',...
+plot(sum(resLoadsKwFinal, 2) + sum(indLoadsKwFinal, 2),'Color','blue','Marker','o','MarkerFaceColor','white',...
     'linewidth',plotWidth);
 hold off;
 
@@ -320,8 +320,8 @@ title('Daily load profile for all loads at normal conditions', 'FontSize', title
     'FontSize', axisFontSize); ylabel('Varying power (kW)', 'FontSize', axisFontSize);
 ax = gca; ax.FontSize = axisFontSize;
 xlim([1 24*pointsMultiplier]); grid on;
-ylim([(floor(min(sum(resLoadsKwFinal, 2) + sum(indtLoadsKwFinal, 2))/500)*500 - 500),...
-    (ceil(max(sum(resLoadsKwFinal, 2) + sum(indtLoadsKwFinal, 2))/500)*500)])
+ylim([(floor(min(sum(resLoadsKwFinal, 2) + sum(indLoadsKwFinal, 2))/500)*500 - 500),...
+    (ceil(max(sum(resLoadsKwFinal, 2) + sum(indLoadsKwFinal, 2))/500)*500)])
 
 busVSet = [2 4 5 6 8 14]; % Only the bus voltages I need
 
@@ -363,7 +363,7 @@ for j = 1:length(busVSet) % ignoring SOURCEBUS
     grid on;
     
     title(strcat("Voltage variation for bus", " ", busNames(i),", ","at normal conditions (base kV_{\phi} ="," ",...
-        num2str(round(basekVs(i)/sqrt(3),3))," ","kV_{rms})")); xlabel('Time',...
+        num2str(round(perUnitBasekVs(i)/sqrt(3),3))," ","kV_{rms})")); xlabel('Time',...
     'FontSize', axisFontSize); ylabel('Voltage in PU', 'FontSize', axisFontSize);
     ax = gca; ax.FontSize = axisFontSize;
     
