@@ -109,7 +109,7 @@ else
 end
 
 load busNames.mat;
-basekVs = [132 11 11 0.4 11 0.4 11 0.4 0.4 11 0.4 11 11 11];resLdkw
+basekVs = [132 11 11 0.4 11 0.4 11 0.4 0.4 11 0.4 11 11 11];
 
 %%
 close all; plot(residentialMuls); hold on; plot(industrialMults); hold off;
@@ -133,10 +133,10 @@ makingLoads(loadFileComponents, [industrialKwFromTestCase residentialKwLoad],...
     [industrialKvarFromTestCase residentialKvarLoad]);
 
 % TODO: Change them to more meaningful names
-resLoadsKwFinal = [];
-resLoadsKvarFinal = [];
-indtLoadsKwFinal = [];
-indLoadsKvar = [];
+resLdkw = [];
+resLdkvar = [];
+industLdkw = [];
+industLdkvar = [];
 
 %% You can check the modified IEEE 13 test case in our thesis to verify bus names
 
@@ -180,19 +180,19 @@ distTrafo646DailyKw = [];
 distTrafo646DailyKvar = [];
 
 substationCurrent = [];
-distTrafo634LVCurrent = [];
-distTrafo675LVCurrent = [];
-distTrafo652LVCurrent = [];
-distTrafo611LVCurrent = [];
-distTrafo646LVCurrent = [];
-bus680OutgoingCurrent = [];
-bus692OutgoingCurrent = [];
+xfm634I = [];
+xfm675I = [];
+xfm652I = [];
+xfm611I = [];
+xfm646I = [];
+bus680I = [];
+bus692I = [];
 
 PLoss = []; 
 QLoss = [];
 
 % Declared once
-showLossFor = {'Transformer.SUB';
+lossesBus = {'Transformer.SUB';
             'Transformer.XFM1';
             'Line.650632';
             'Line.632671';
@@ -207,26 +207,32 @@ showLossFor = {'Transformer.SUB';
             'Line.671692'};
 
 % Defined once
-plotComponentNames = ["Transformer.SUB";'Transformer.XFM1';'Transformer.XFM2';'Transformer.XFM3';'Transformer.XFM4';
+pNames = ["Transformer.SUB";'Transformer.XFM1';'Transformer.XFM2';'Transformer.XFM3';'Transformer.XFM4';
 'Transformer.XFM5';'Line.650632';'Line.632671';'Line.671680';'Line.632633';'Line.632645';'Line.671684';
 'Line.671692'; 'Capacitor.CAP1'; 'Capacitor.CAP2'; 'Load.645A'; 'Load.645B'; 'Load.645C'; 'Load.671';
 'Load.692'; 'Load.680A'; 'Load.680B'; 'Load.680C'; 'Load.634A'; 'Load.634B'; 'Load.634C';
 'Load.646A'; 'Load.646B'; 'Load.652'; 'Load.611'; 'Load.675A'; 'Load.675B';'Load.675C'];
 
 % This will be defined once as well
-AllLosses = [];
+lossesAll = [];
 
-startLoadAt = 16;
-phaseWiseArray = [4 5 6 0 0 1 2 3 1 2 3 1 2 1 3 1 2 3];
-nTrafos = 6; % 5 distr. trafo's and one substation trafo
+LoadStart = 16;
+phaseWiseVec = [4 5 6 0 0 1 2 3 1 2 3 1 2 1 3 1 2 3];
+numTrafo = 6; % 5 distr. trafo's and one substation trafo
 
 % clearvars reskwDaily reskvarDaily indkwDaily indkvarDaily
 
 for i = 1:nPoints
+    % residential house load
+%     kwLoopRes = housekw*houseMult(i); kvarLoopRes = housekvar*houseMult(i);
+%     The particular power values for the i-th hour
+%   % industrial load                                                         
+%     kwLoopInd = industkw*industMult(i); kvarLoopInd = industkvar*industMult(i);
+
     %residential house load
-    kwLoopRes = resDailyKwLoad(i,:); kvarLoopRes = resDailyKvarLoad(i,:); % The particular power values for the i-th hour
-    %industrial load                                              
-    kwLoopInd = indDailyKwLoad(i,:); kvarLoopInd = indDailyKvarLoad(i,:); % The particular power values for the i-th hour
+    kwLoopRes = resDailyKwLoad(i,:); kvarLoopRes = resDailyKvarLoad(i,:); % The particular power
+    %industrial load                                              % values for the i-th hour
+    kwLoopInd = indDailyKwLoad(i,:); kvarLoopInd = indDailyKvarLoad(i,:);
     
     makingLoads(loadFileComponents, [kwLoopInd kwLoopRes],...
         [kvarLoopInd kvarLoopRes]); % make the loadss.txt file
@@ -236,71 +242,78 @@ for i = 1:nPoints
     V3pu = [V3pu; Vpu1hr(:,3)']; % Get the per-phase voltage values for phase c
     
     % Read the powers per phase from the file
-    [tempTrafoKw, tempTrafoKvar, tempLoadKw, tempLoadKvar]...
+    [tempTrafokw, tempTrafokvar, tempLoadkw, tempLoadkvar]...
          = getPs(xlsread('MasterIEEE13_EXP_P_BYPHASE.CSV',1,'E2:J34'),...
-         startLoadAt, phaseWiseArray, nTrafos); % Extract the 
+         LoadStart, phaseWiseVec, numTrafo); % Extract the 
                                              % power values for all loads
                                              % and trafos
     
-    indtLoadsKwFinal = [indtLoadsKwFinal; sum(tempLoadKw(1:nindustrialLoads,:), 1)];
-    indLoadsKvar = [indLoadsKvar; sum(tempLoadKvar(1:nindustrialLoads,:), 1)];
+    industLdkw = [industLdkw; sum(tempLoadkw(1:nindustrialLoads,:), 1)];
+    industLdkvar = [industLdkvar; sum(tempLoadkvar(1:nindustrialLoads,:), 1)];
     
-    resLoadsKwFinal = [resLoadsKwFinal; sum(tempLoadKw(nindustrialLoads+1:end,:), 1)];
-    resLoadsKvarFinal = [resLoadsKvarFinal; sum(tempLoadKvar(nindustrialLoads+1:end,:), 1)];
+    resLdkw = [resLdkw; sum(tempLoadkw(nindustrialLoads+1:end,:), 1)];
+    resLdkvar = [resLdkvar; sum(tempLoadkvar(nindustrialLoads+1:end,:), 1)];
     
     tempI = getCurr3ph1hr(xlsread('MasterIEEE13_EXP_CURRENTS.CSV',1,'L2:Q8'), 2, 7);
     % tempBus680I = getCurr1ph1hr(xlsread('MasterIEEE13_EXP_CURRENTS.CSV',1,'B23:E25'));
     tempBus692I = getCurr3ph1hr(xlsread('MasterIEEE13_EXP_CURRENTS.CSV',1,'L2:Q15'), 10 ,14);
     
     substationCurrent = [substationCurrent; tempI(1,:)]; % Need this for final
-    distTrafo634LVCurrent = [distTrafo634LVCurrent; tempI(2,:)]; % Need this for final
-    distTrafo675LVCurrent = [distTrafo675LVCurrent; tempI(3,:)]; % Need this for final
-    distTrafo652LVCurrent = [distTrafo652LVCurrent; tempI(4,:)];
-    distTrafo611LVCurrent = [distTrafo611LVCurrent; tempI(5,:)];
-    distTrafo646LVCurrent = [distTrafo646LVCurrent; tempI(6,:)];
-    bus680OutgoingCurrent = [bus680OutgoingCurrent; tempBus692I(1,:)]; % Need this for final
-    bus692OutgoingCurrent = [bus692OutgoingCurrent; tempBus692I(end,:)]; % Need this for final
+    xfm634I = [xfm634I; tempI(2,:)]; % Need this for final
+    xfm675I = [xfm675I; tempI(3,:)]; % Need this for final
+    xfm652I = [xfm652I; tempI(4,:)];
+    xfm611I = [xfm611I; tempI(5,:)];
+    xfm646I = [xfm646I; tempI(6,:)];
+    bus680I = [bus680I; tempBus692I(1,:)]; % Need this for final
+    bus692I = [bus692I; tempBus692I(end,:)]; % Need this for final
     
 
     % substation and distr. trafo.
-    substationDailyKw = [substationDailyKw; tempTrafoKw(1,:)]; % Store the kW power flow for substation
-    subkvar = [subkvar; tempTrafoKvar(1,:)]; % Store the kVAR power flow for substation
+    substationDailyKw = [substationDailyKw; tempTrafokw(1,:)]; % Store the kW power flow for substation
+    subkvar = [subkvar; tempTrafokvar(1,:)]; % Store the kVAR power flow for substation
     
-    distTrafo634DailyKw = [distTrafo634DailyKw; tempTrafoKw(2,:)]; % Store the kW power flow for dist. trafo. of 634
-    distTrafo634DailyKvar = [distTrafo634DailyKvar; tempTrafoKvar(2,:)]; % Store the kVAR power flow for dist. trafo. of 634
+    distTrafo634DailyKw = [distTrafo634DailyKw; tempTrafokw(2,:)]; % Store the kW power flow for dist. trafo. of 634
+    distTrafo634DailyKvar = [distTrafo634DailyKvar; tempTrafokvar(2,:)]; % Store the kVAR power flow for dist. trafo. of 634
     
-    distTrafo675DailyKw = [distTrafo675DailyKw; tempTrafoKw(3,:)]; % Store the kW power flow for dist. trafo. of 675
-    distTrafo675DailyKvar = [distTrafo675DailyKvar; tempTrafoKvar(3,:)]; % Store the kVAR power flow for dist. trafo. of 675
+    distTrafo675DailyKw = [distTrafo675DailyKw; tempTrafokw(3,:)]; % Store the kW power flow for dist. trafo. of 675
+    distTrafo675DailyKvar = [distTrafo675DailyKvar; tempTrafokvar(3,:)]; % Store the kVAR power flow for dist. trafo. of 675
     
-    distTrafo652DailyKw = [distTrafo652DailyKw; tempTrafoKw(4,:)]; % Store the kW power flow for dist. trafo. of 652
-    distTrafo652DailyKvar = [distTrafo652DailyKvar; tempTrafoKvar(4,:)]; % Store the kVAR power flow for dist. trafo. of 652
+    distTrafo652DailyKw = [distTrafo652DailyKw; tempTrafokw(4,:)]; % Store the kW power flow for dist. trafo. of 652
+    distTrafo652DailyKvar = [distTrafo652DailyKvar; tempTrafokvar(4,:)]; % Store the kVAR power flow for dist. trafo. of 652
         
-    distTrafo611DailyKw = [distTrafo611DailyKw; tempTrafoKw(5,:)]; % Store the kW power flow for dist. trafo. of 611
-    distTrafo611DailyKvar = [distTrafo611DailyKvar; tempTrafoKvar(5,:)]; % Store the kVAR power flow for dist. trafo. of 611
+    distTrafo611DailyKw = [distTrafo611DailyKw; tempTrafokw(5,:)]; % Store the kW power flow for dist. trafo. of 611
+    distTrafo611DailyKvar = [distTrafo611DailyKvar; tempTrafokvar(5,:)]; % Store the kVAR power flow for dist. trafo. of 611
     
-    distTrafo646DailyKw = [distTrafo646DailyKw; tempTrafoKw(6,:)]; % Store the kW power flow for dist. trafo. of 646
-    distTrafo646DailyKvar = [distTrafo646DailyKvar; tempTrafoKvar(6,:)]; % Store the kVAR power flow for dist. trafo. of 646
+    distTrafo646DailyKw = [distTrafo646DailyKw; tempTrafokw(6,:)]; % Store the kW power flow for dist. trafo. of 646
+    distTrafo646DailyKvar = [distTrafo646DailyKvar; tempTrafokvar(6,:)]; % Store the kVAR power flow for dist. trafo. of 646
     
     [PLossTemp, QLossTemp] = getLinePower(readtable("MasterIEEE13_EXP_LOSSES.CSV")); % Getting all loses for the
                                                                                      % i-th HOUR
     PLoss = [PLoss PLossTemp];
     QLoss = [QLoss QLossTemp];
-
+    
+    % TODO: Figure out why I commented this out
+    % clearvars -except subkw subkvar xfmkw xfmkvar str_part lds_kw lds_kvar normal_mult overld20_mult overld40_mult V1pu V2pu V3pu
 end
 
 save('normal','V1pu','V2pu','V3pu',...
     'distTrafo634DailyKw', 'distTrafo634DailyKvar', 'distTrafo675DailyKw', 'distTrafo675DailyKvar', 'distTrafo652DailyKw', 'distTrafo652DailyKvar',...
     'distTrafo611DailyKw', 'distTrafo611DailyKvar', 'distTrafo646DailyKw', 'distTrafo646DailyKvar',...
-    'substationDailyKw','subkvar', 'resLoadsKwFinal','indtLoadsKwFinal',...
-    'resLoadsKvarFinal','indLoadsKvar','showLossFor',...
+    'substationDailyKw','subkvar', 'resLdkw','industLdkw',...
+    'resLdkvar','industLdkvar','lossesBus',...
     'resRatedKwLoad','resRatedKvarLoad','indRatedKwLoad','indRatedKvarLoad',...
-    'substationCurrent','distTrafo634LVCurrent','distTrafo646LVCurrent','distTrafo675LVCurrent','distTrafo652LVCurrent','distTrafo611LVCurrent','bus680OutgoingCurrent','bus692OutgoingCurrent',...
+    'substationCurrent','xfm634I','xfm646I','xfm675I','xfm652I','xfm611I','bus680I','bus692I',...
     'PLoss', 'QLoss');
 
 clc;
 
 %%
 close all;
+
+% Just testing something I guess
+% figure;
+% plot(sum(subkw, 2),'Color','red');
+% load('normal.mat');
 
 V1pu(V1pu==0) = NaN;
 V2pu(V2pu==0) = NaN;
@@ -310,7 +323,7 @@ V3pu(V3pu==0) = NaN;
 % Total load (residential + industrial) graphs
 figure('Renderer', 'painters', 'Position', [200 -100 1100 700]);
 hold on; 
-plot(sum(resLoadsKwFinal, 2) + sum(indtLoadsKwFinal, 2),'Color','blue','Marker','o','MarkerFaceColor','white',...
+plot(sum(resLdkw, 2) + sum(industLdkw, 2),'Color','blue','Marker','o','MarkerFaceColor','white',...
     'linewidth',plotWidth);
 hold off;
 
@@ -320,8 +333,8 @@ title('Daily load profile for all loads at normal conditions', 'FontSize', title
     'FontSize', axisFontSize); ylabel('Varying power (kW)', 'FontSize', axisFontSize);
 ax = gca; ax.FontSize = axisFontSize;
 xlim([1 24*pointsMultiplier]); grid on;
-ylim([(floor(min(sum(resLoadsKwFinal, 2) + sum(indtLoadsKwFinal, 2))/500)*500 - 500),...
-    (ceil(max(sum(resLoadsKwFinal, 2) + sum(indtLoadsKwFinal, 2))/500)*500)])
+ylim([(floor(min(sum(resLdkw, 2) + sum(industLdkw, 2))/500)*500 - 500),...
+    (ceil(max(sum(resLdkw, 2) + sum(industLdkw, 2))/500)*500)])
 
 busVSet = [2 4 5 6 8 14]; % Only the bus voltages I need
 
@@ -558,9 +571,9 @@ lgnd.FontSize = legendFontSize; clearvars str;
 %%
 % Plotting 24-hr current flow at 2ndary terminal for 634
 figure('Renderer', 'painters', 'Position', [200 100 1100 700])
-plot(distTrafo634LVCurrent(:,1),'linewidth',plotWidth); hold on;
-plot(distTrafo634LVCurrent(:,2),'linewidth',plotWidth*1.12); 
-plot(distTrafo634LVCurrent(:,3),'linewidth',plotWidth*1.14); 
+plot(xfm634I(:,1),'linewidth',plotWidth); hold on;
+plot(xfm634I(:,2),'linewidth',plotWidth*1.12); 
+plot(xfm634I(:,3),'linewidth',plotWidth*1.14); 
 % plot(sum(distTrafo646DailyKw, 2),'linewidth',plotWidth*1.16);
 plot(ones(1,nPoints)*1000*1.1/0.4/sqrt(3),'linewidth',plotWidth);
 % plot(ones(1,npts)*(1000*1.5/0.4/sqrt(3)),'linewidth',plotWidth);
@@ -573,7 +586,7 @@ title('Distribution transformer (634) current flow at normal conditions', 'FontS
     'FontSize', axisFontSize); ylabel('Current (A)', 'FontSize', axisFontSize);
 ax = gca; ax.FontSize = axisFontSize;
 str = "Normal Ampere rating";
-ylim([floor(min((distTrafo634LVCurrent), [], 'all'))/500 ceil(max([max(distTrafo634LVCurrent,[] ,'all'); 1000*1.1/0.4/sqrt(3)]))*1.15]) % Max rating are from max current,
+ylim([floor(min((xfm634I), [], 'all'))/500 ceil(max([max(xfm634I,[] ,'all'); 1000*1.1/0.4/sqrt(3)]))*1.15]) % Max rating are from max current,
                                                                                                       % normamps 
 xlim([1 24*pointsMultiplier]);
 lgnd = legend({'Phase a','Phase b','Phase c',str},'Location','southoutside','orientation','horizontal');
@@ -582,9 +595,9 @@ lgnd.FontSize = legendFontSize; clearvars str;
 %%
 % Plotting 24-hr current flow at 2ndary terminal for 675
 figure('Renderer', 'painters', 'Position', [200 100 1100 700])
-plot(distTrafo675LVCurrent(:,1),'linewidth',plotWidth); hold on;
-plot(distTrafo675LVCurrent(:,2),'linewidth',plotWidth*1.12); 
-plot(distTrafo675LVCurrent(:,3),'linewidth',plotWidth*1.14); 
+plot(xfm675I(:,1),'linewidth',plotWidth); hold on;
+plot(xfm675I(:,2),'linewidth',plotWidth*1.12); 
+plot(xfm675I(:,3),'linewidth',plotWidth*1.14); 
 % plot(sum(distTrafo646DailyKw, 2),'linewidth',plotWidth*1.16);
 plot(ones(1,nPoints)*1000*1.1/0.4/sqrt(3),'linewidth',plotWidth);
 % plot(ones(1,npts)*(1000*1.5/0.4/sqrt(3)),'linewidth',plotWidth);
@@ -597,7 +610,7 @@ title('Distribution transformer (675) current flow at normal conditions', 'FontS
     'FontSize', axisFontSize); ylabel('Current (A)', 'FontSize', axisFontSize);
 ax = gca; ax.FontSize = axisFontSize;
 str = "Normal Ampere rating";
-ylim([floor(min((distTrafo675LVCurrent), [], 'all'))/500 ceil(max([max(distTrafo675LVCurrent,[] ,'all'); 1000*1.1/0.4/sqrt(3)]))*1.15]) % Max rating are from max current,
+ylim([floor(min((xfm675I), [], 'all'))/500 ceil(max([max(xfm675I,[] ,'all'); 1000*1.1/0.4/sqrt(3)]))*1.15]) % Max rating are from max current,
                                                                                                       % normamps 
 xlim([1 24*pointsMultiplier]);
 lgnd = legend({'Phase a','Phase b','Phase c',str},'Location','southoutside','orientation','horizontal');
@@ -607,9 +620,9 @@ lgnd.FontSize = legendFontSize; clearvars str;
 % Plotting 24-hr current flow at 2ndary terminal for bus 680
 % IMPORTANT! I'll mention the current rating separately
 figure('Renderer', 'painters', 'Position', [200 100 1100 700])
-plot(bus680OutgoingCurrent(:,1),'linewidth',plotWidth); hold on;
-plot(bus680OutgoingCurrent(:,2),'linewidth',plotWidth*1.12); 
-plot(bus680OutgoingCurrent(:,3),'linewidth',plotWidth*1.14); 
+plot(bus680I(:,1),'linewidth',plotWidth); hold on;
+plot(bus680I(:,2),'linewidth',plotWidth*1.12); 
+plot(bus680I(:,3),'linewidth',plotWidth*1.14); 
 % plot(ones(1,npts)*726,'linewidth',plotWidth); % CURRENT RATING!!!
 % plot(ones(1,npts)*(1000*1.5/0.4/sqrt(3)),'linewidth',plotWidth);
 hold off;
@@ -621,7 +634,7 @@ title('Bus 680 current flow at normal conditions', 'FontSize', titleFontSize); x
     'FontSize', axisFontSize); ylabel('Current (A)', 'FontSize', axisFontSize);
 ax = gca; ax.FontSize = axisFontSize;
 str = "Normal Ampere rating";
-ylim([floor(min((bus680OutgoingCurrent), [], 'all'))/500 ceil(max([max(bus680OutgoingCurrent,[] ,'all'); 0]))*1.15]) % Max rating are from max current,
+ylim([floor(min((bus680I), [], 'all'))/500 ceil(max([max(bus680I,[] ,'all'); 0]))*1.15]) % Max rating are from max current,
                                                                                                       % normamps 
 xlim([1 24*pointsMultiplier]);
 lgnd = legend({'Phase a','Phase b','Phase c',str},'Location','southoutside','orientation','horizontal');
@@ -631,9 +644,9 @@ lgnd.FontSize = legendFontSize; clearvars str;
 % Plotting 24-hr current flow at 2ndary terminal for bus 692
 % IMPORTANT! I'll mention the current rating separately
 figure('Renderer', 'painters', 'Position', [200 100 1100 700])
-plot(bus692OutgoingCurrent(:,1),'linewidth',plotWidth); hold on;
-plot(bus692OutgoingCurrent(:,2),'linewidth',plotWidth*1.12); 
-plot(bus692OutgoingCurrent(:,3),'linewidth',plotWidth*1.14); 
+plot(bus692I(:,1),'linewidth',plotWidth); hold on;
+plot(bus692I(:,2),'linewidth',plotWidth*1.12); 
+plot(bus692I(:,3),'linewidth',plotWidth*1.14); 
 % plot(ones(1,npts)*260,'linewidth',plotWidth); % CURRENT RATING!!!
 % We'll just mention it!!!
 % plot(ones(1,npts)*(1000*1.5/0.4/sqrt(3)),'linewidth',plotWidth);
@@ -646,7 +659,7 @@ title('Bus 692 current flow at normal conditions', 'FontSize', titleFontSize); x
     'FontSize', axisFontSize); ylabel('Current (A)', 'FontSize', axisFontSize);
 ax = gca; ax.FontSize = axisFontSize;
 str = "Normal Ampere rating";
-ylim([floor(min((bus692OutgoingCurrent), [], 'all'))/500 ceil(max([max(bus692OutgoingCurrent,[] ,'all'); 0]))*1.15]) % Max rating are from max current,
+ylim([floor(min((bus692I), [], 'all'))/500 ceil(max([max(bus692I,[] ,'all'); 0]))*1.15]) % Max rating are from max current,
                                                                                                       % normamps 
 xlim([1 24*pointsMultiplier]);
 lgnd = legend({'Phase a','Phase b','Phase c'},'Location','southoutside','orientation','horizontal');
@@ -655,9 +668,9 @@ lgnd.FontSize = legendFontSize; clearvars str;
 %%
 % Plotting 24-hr current flow at 2ndary terminal for bus 652
 figure('Renderer', 'painters', 'Position', [200 100 1100 700])
-plot(distTrafo652LVCurrent(:,1),'linewidth',plotWidth); hold on;
-plot(distTrafo652LVCurrent(:,2),'linewidth',plotWidth*1.12); 
-plot(distTrafo652LVCurrent(:,3),'linewidth',plotWidth*1.14); 
+plot(xfm652I(:,1),'linewidth',plotWidth); hold on;
+plot(xfm652I(:,2),'linewidth',plotWidth*1.12); 
+plot(xfm652I(:,3),'linewidth',plotWidth*1.14); 
 plot(ones(1,nPoints)*1000*1.1/0.4/sqrt(3),'linewidth',plotWidth);
 % We'll just mention it!!!
 % plot(ones(1,npts)*(1000*1.5/0.4/sqrt(3)),'linewidth',plotWidth);
@@ -670,7 +683,7 @@ title('Distribution transformer (652) current flow at normal conditions', 'FontS
     'FontSize', axisFontSize); ylabel('Current (A)', 'FontSize', axisFontSize);
 ax = gca; ax.FontSize = axisFontSize;
 str = "Normal Ampere rating";
-ylim([floor(min((distTrafo652LVCurrent), [], 'all'))/500 ceil(max([max(distTrafo652LVCurrent,[] ,'all'); 0]))*1.15]) % Max rating are from max current,
+ylim([floor(min((xfm652I), [], 'all'))/500 ceil(max([max(xfm652I,[] ,'all'); 0]))*1.15]) % Max rating are from max current,
                                                                                                       % normamps 
 xlim([1 24*pointsMultiplier]);
 lgnd = legend({'Phase a','Phase b','Phase c',str},'Location','southoutside','orientation','horizontal');
@@ -679,9 +692,9 @@ lgnd.FontSize = legendFontSize; clearvars str;
 %% I think following plots were not needed for final eval
 % % Plotting 24-hr current flow at 2ndary terminal for 675
 % figure('Renderer', 'painters', 'Position', [200 100 1100 700])
-% plot(distTrafo675LVCurrent(:,1),'linewidth',plotWidth); hold on;
-% plot(distTrafo675LVCurrent(:,2),'linewidth',plotWidth*1.12); 
-% plot(distTrafo675LVCurrent(:,3),'linewidth',plotWidth*1.14); 
+% plot(xfm675I(:,1),'linewidth',plotWidth); hold on;
+% plot(xfm675I(:,2),'linewidth',plotWidth*1.12); 
+% plot(xfm675I(:,3),'linewidth',plotWidth*1.14); 
 % % plot(sum(distTrafo646DailyKw, 2),'linewidth',plotWidth*1.16);
 % plot(ones(1,npts)*(357),'linewidth',plotWidth);
 % % plot(ones(1,npts)*(1000*1.5/0.4/sqrt(3)),'linewidth',plotWidth);
@@ -694,7 +707,7 @@ lgnd.FontSize = legendFontSize; clearvars str;
 %     'FontSize', axisFontSize); ylabel('Varying power (kW)', 'FontSize', axisFontSize);
 % ax = gca; ax.FontSize = axisFontSize;
 % str = "Normal Ampere flow";
-% ylim([floor(min((distTrafo675LVCurrent), [], 'all'))/500 ceil(max([sum(distTrafo646DailyKw, 2); 357]))*1.15]) % Max rating are from max current,
+% ylim([floor(min((xfm675I), [], 'all'))/500 ceil(max([sum(distTrafo646DailyKw, 2); 357]))*1.15]) % Max rating are from max current,
 %                                                                                   % normamps and emergamps
 % xlim([1 24*nptMult]);
 % lgnd = legend({'Phase a','Phase b','Phase c',str},'Location','southoutside','orientation','horizontal');
@@ -703,9 +716,9 @@ lgnd.FontSize = legendFontSize; clearvars str;
 % %%
 % % Plotting 24-hr current flow at 2ndary terminal for 634
 % figure('Renderer', 'painters', 'Position', [200 100 1100 700])
-% plot(bus680OutgoingCurrent(:,1),'linewidth',plotWidth); hold on;
-% plot(bus680OutgoingCurrent(:,2),'linewidth',plotWidth*1.12); 
-% plot(bus680OutgoingCurrent(:,3),'linewidth',plotWidth*1.14); 
+% plot(bus680I(:,1),'linewidth',plotWidth); hold on;
+% plot(bus680I(:,2),'linewidth',plotWidth*1.12); 
+% plot(bus680I(:,3),'linewidth',plotWidth*1.14); 
 % % plot(sum(distTrafo646DailyKw, 2),'linewidth',plotWidth*1.16);
 % % plot(ones(1,npts)*(5500*1.1/11/sqrt(3)),'linewidth',plotWidth);
 % % plot(ones(1,npts)*(5500*1.5/11/sqrt(3)),'linewidth',plotWidth);
@@ -720,7 +733,7 @@ lgnd.FontSize = legendFontSize; clearvars str;
 %     'FontSize', axisFontSize); ylabel('Varying power (kW)', 'FontSize', axisFontSize);
 % ax = gca; ax.FontSize = axisFontSize;
 % str = "Normal Ampere flow";
-% ylim([floor(min((substationCurrent), [], 'all'))/500 ceil(max([sum(distTrafo646DailyKw, 2); 5500*1.1/11/sqrt(3); 5500*1.5/11/sqrt(3)]))*1.15]) % Max rating are from max current,
+% ylim([floor(min((subI), [], 'all'))/500 ceil(max([sum(distTrafo646DailyKw, 2); 5500*1.1/11/sqrt(3); 5500*1.5/11/sqrt(3)]))*1.15]) % Max rating are from max current,
 %                                                                                                                        % normamps and emergamps
 % xlim([1 24*nptMult]);
 % lgnd = legend({'Phase a','Phase b','Phase c',str,"Emergency Ampere flow"},'Location','southoutside','orientation','horizontal');
