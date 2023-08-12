@@ -1,17 +1,21 @@
 %% Notes
-% Save a dataset for each case
-
-% 2 and 3 wheelers will have a different peak
-% They will have low charging powers and higher times
-% hence put up all night. They will also be more POPULAR.
-
-% when dim = 1, remains the COLUMN, when dim = 2, remains the ROW
-
+% Save a dataset for each case 2 and 3 wheelers will have a different peak
+% They will have low charging powers and higher times hence put up all night. They will also be more POPULAR.
+% When dim = 1, remains the COLUMN, when dim = 2, remains the ROW
 % VERY IMPORTANT: Cite the MATLAB codes
-
 % power_13NodeTestFeeder -> Simulink command for IEEE 13 node
-
 % When you use i as a count variable, use j for the complex number
+
+%% Refactor notes
+% Have meaningful variable names
+% Remove duplication
+% Get in working condition
+% Get FYP results
+% (Optional) Make it general purpose (this was our ambition)
+
+%% Design notes
+% Have only two files: normal condition and with EV
+% with EV will take arguments for EV data
 
 %% Normal condition set up
 
